@@ -33,12 +33,14 @@ function App() {
   return (
     <>
       <Navbar />
+      <div className='md:pt-20 pt-45'>
 
-      <Routes>
-        <Route path='/' element={<Home data={data} loader={loader} />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/product/:id' element={<Product />} />
-      </Routes>
+        <Routes>
+          <Route path='/' element={<Home data={data} loader={loader} />} />
+          <Route path='/cart' element={<Cart />} />
+          <Route path='/product/:id' element={<Product />} />
+        </Routes>
+      </div>
     </>
   )
 }

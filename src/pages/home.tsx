@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom"
 import type { DataTypes } from "../types/dataType"
+import { IoBagAddOutline } from "react-icons/io5"
+import { useEffect, useState } from "react"
 
 
 
@@ -11,6 +13,41 @@ type HomeProps = {
 const Home = ({ data, loader }: HomeProps) => {
 
 
+    const getInitialCart = () => {
+        const savedCart = localStorage.getItem('cart')
+        if (!savedCart) {
+            return []
+        }
+        else {
+
+            return JSON.parse(savedCart)
+        }
+    }
+
+
+    const [cart, setCart] = useState(getInitialCart)
+
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart))
+    }, [cart])
+
+    const AddItemToCart = (product: DataTypes) => {
+        setCart((cart: DataTypes[]) => {
+            const existingProduct = cart.find((item) => item.id === product.id)
+
+            if (existingProduct) {
+                return cart.map((item) => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)
+            }
+            return [...cart, { ...product, quantity: 1 }]
+        })
+
+
+    }
+
+
+
+
     return (<>
 
         <section className="text-gray-600 body-font">
@@ -19,23 +56,21 @@ const Home = ({ data, loader }: HomeProps) => {
                 <div className="mt-5 gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {loader ? <div>loading..</div> : (
                         data.map((el) => (
-                            <Link to={`/product/${el.id}`} key={el.id} className="bg-gray-100 hover:scale-105 duration-200 ease-in-out flex flex-col justify-between p-6 h-[425px] rounded-lg  ">
-                                <div className="flex items-center  justify-center">
+                            <div key={el.id} className="bg-gray-100  flex flex-col justify-between p-6 h-[425px] rounded-lg  ">
+                                <Link to={`/product/${el.id}`} className="flex hover:scale-110 duration-200 ease-in-out items-center  justify-center">
                                     <img alt="ecommerce" className="h-60 object-contain " src={el.image} />
-                                </div>
+                                </Link>
                                 <div className="mt-4 flex flex-col justify-between ">
                                     <h3 className="text-gray-500 text-xs tracking-widest title-font mb-1">{el.category}</h3>
                                     <h2 className="text-gray-900 title-font text-lg font-medium line-clamp-2">{el.title}</h2>
                                     <div className="flex items-center mt-3 justify-between">
                                         <p className="mt-1 font-bold">&#36;{el.price}</p>
-                                        <button className="inline-flex cursor-pointer text-white duration-150 transition ease-in-out hover:scale-110 items-center bg-green-400 border-0 py-1 px-3 focus:outline-none rounded text-base mt-4 md:mt-0">Add to cart
-                                            <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-1" viewBox="0 0 24 24">
-                                                <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                            </svg>
+                                        <button onClick={() => AddItemToCart(el)} className="flex gap-1 active:scale-100 justify-center cursor-pointer text-white duration-150 transition ease-in-out hover:scale-110 items-center bg-green-400 border-0 py-1 px-3 focus:outline-none rounded text-base mt-4 md:mt-0">Add to Cart
+                                            <IoBagAddOutline className="text-[18px]" />
                                         </button>
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         ))
 
                     )}
